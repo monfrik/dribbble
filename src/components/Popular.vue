@@ -3,7 +3,7 @@
         <div v-if="!loadingImages">
             <ul>
                 <li v-for="image in images" :key="image.id">
-                    <img :src="image.path" :alt="image.name" @click="outerVisible = true, currentImage = image">
+                    <img :src="'http://gallery.dev.webant.ru/media/'+image.image.contentUrl" :alt="image.name" @click="outerVisible = true, currentImage = image">
                 </li>
             </ul>
             <el-pagination
@@ -11,10 +11,13 @@
             background
             layout="prev, pager, next"
             :page-size="15"
-            :total="images.length">
+            :current-page.sync="currentPage"
+            :total="totalItems"
+            @current-change="changePage()"
+            >
             </el-pagination>
-            <el-dialog :visible.sync="outerVisible" class="popup">
-                <img :src="currentImage.path" :alt="currentImage.name">
+            <el-dialog :visible.sync="outerVisible" class="popup" v-if="outerVisible">
+                <img :src="'http://gallery.dev.webant.ru/media/'+currentImage.image.contentUrl" :alt="currentImage.name">
                 <h2>{{ currentImage.name }}</h2>
                 <p>{{ currentImage.description }}</p>
             </el-dialog>
@@ -24,38 +27,45 @@
 </template>
 
 <script>
-import axios from 'axios';
-import loading from '@/components/Loading';
-
+import axios from 'axios'
+import loading from '@/components/Loading'
 export default {
     name: 'New',
     data(){
         return {
             images: [],
+            totalItems: 0,
             loadingImages: true,
             outerVisible: false,
-            currentImage: {}
+            currentImage: {},
+            pageCount: 15,
+            currentPage : 1
         }
     },
     components: {
         loading
     },
     mounted () {
-        axios.get('/api/photos')
+        axios.get('/api/photos?new=true&page=1&limit=15')
             .then(response => {
-                    let id = 0;
-                    response.data.data.forEach(element => {
-                        if (element.popular) {
-                            element.id = id;
-                            id++;
-                            element.path = 'http://gallery.dev.webant.ru/media/' + element.image.contentUrl;
-                            this.images.push(element);
-                        }
-                    })
+                this.images = response.data.data
+                this.totalItems = response.data.totalItems
             })
             .then(()=>{
-                this.loadingImages = false;
+                this.loadingImages = false
             })
+    },
+    methods: {
+            changePage: function(){
+                this.loadingImages = true
+                axios.get(`/api/photos?popular=true&page=${this.currentPage}&limit=15`)
+                .then(response => {
+                    this.images = response.data.data
+                })
+                .then(()=>{
+                    this.loadingImages = false
+                })
+            }
     }
 }
 </script>

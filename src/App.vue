@@ -30,4 +30,8 @@ export default {
         text-decoration: none
     .main
         margin: 47px 47px 60px 47px
+        min-height: 80vh
+        position: relative
+    .el-pagination.is-background .el-pager li:not(.disabled).active
+        background-color: #ED5992
 </style>
