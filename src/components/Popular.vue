@@ -46,7 +46,7 @@ export default {
         loading
     },
     mounted () {
-        axios.get('/api/photos?new=true&page=1&limit=15')
+        axios.get('/api/photos?popular=true&page=1&limit=15')
             .then(response => {
                 this.images = response.data.data
                 this.totalItems = response.data.totalItems
