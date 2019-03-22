@@ -20,9 +20,14 @@ export let store = new Vuex.Store({
         }
     },
     actions: {
-        SET_AUTHORIZED: context => {
-            let data = localStorage.getItem('access_token') ? true : false
-            context.commit('SET_AUTHORIZED', data);
+        SET_AUTHORIZED: (context, payload = '') => {
+            if (payload != '') {
+                let data = payload
+                context.commit('SET_AUTHORIZED', data)
+            } else {
+                let data = localStorage.getItem('access_token') ? true : false
+                context.commit('SET_AUTHORIZED', data)
+            }
         }
     },
 });

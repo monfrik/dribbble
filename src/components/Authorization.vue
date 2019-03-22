@@ -41,6 +41,12 @@ export default {
                         .then(()=>{
                             this.fullscreenLoading = false
                             this.$router.push('Admin')
+                            this.$message.success('Добро пожаловать,'+this.form.login+'!')
+                            this.fullscreenLoading = false
+                        })
+                        .catch(()=>{
+                            this.$message.error('Не правильный логин или пароль')
+                            this.fullscreenLoading = false
                         })
                 } else {
                     this.$message.error('Не правильный логин или пароль')

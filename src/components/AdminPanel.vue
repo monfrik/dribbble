@@ -22,11 +22,6 @@ export default {
             set: function(){this.$store.dispatch('SET_AUTHORIZED')}
         }
     },
-    watch:{
-        // authorized(newValue, oldValue){
-        //     this.authorizedBool = newValue
-        // }
-    }
 }
 </script>
 

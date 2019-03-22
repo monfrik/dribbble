@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading.fullscreen.lock="fullscreenLoading">
         <el-form ref="form">
              <el-form-item label="Name photo">
                 <el-input v-model="form.name"></el-input>
@@ -22,7 +22,6 @@
             :data="form.file"
             :on-change="change">
                 <el-button slot="trigger" size="small" type="primary" v-model="form.file">select file</el-button>
-                <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">upload to server</el-button> -->
                 <div class="el-upload__tip" slot="tip">jpg/png files with a size less than 500kb</div>
             </el-upload>
             <el-button type="primary" @click="submitUpload">upload</el-button>
@@ -43,11 +42,13 @@ export default {
                 name: '',
                 desc: '',
                 file: {}
-            }
+            },
+            fullscreenLoading: false
         }
     },
     methods: {
         submitUpload() {
+            this.fullscreenLoading = true
             let newBool = (this.form.type[0] == 'New') ? true : (this.form.type[1] == 'New') ? true : false
             let popularBool = (this.form.type[0] == 'Popular') ? true : (this.form.type[1] == 'Popular') ? true : false
             let formData = new FormData();
@@ -56,6 +57,28 @@ export default {
                 'headers': {
                     'Authorization': 'Bearer '+localStorage.getItem('access_token')
                 }
+            })
+            .catch((response)=>{
+                axios.post('/oauth/v2/token', {
+                    'client_id': clientParam.id,
+                    'grant_type': 'refresh_token',
+                    'refresh_token': localStorage.getItem('refresh_token'),
+                    'client_secret': clientParam.secret,
+                })
+                .then((response)=>{
+                    let access_token = response.data.access_token
+                    localStorage.setItem('access_token', access_token)
+                    let refresh_token = response.data.refresh_token
+                    localStorage.setItem('refresh_token', refresh_token)
+                    this.submitUpload()
+                })
+                .catch((response)=>{
+                    this.fullscreenLoading = false
+                    localStorage.removeItem('access_token')
+                    localStorage.removeItem('refresh_token')
+                    this.$store.dispatch('SET_AUTHORIZED', false)
+                    this.$router.push('Authorization')
+                })
             })
             .then(response => {
                 const id = response.data.id
@@ -71,37 +94,48 @@ export default {
                     }
                 })
                 .then(()=>{
+                    this.fullscreenLoading = false
                     this.$message({
                         message: 'Photo resource created',
                         type: 'success'
                     });
                 })
                 .catch((response)=>{
-                    if (response.status == 401) {
-                        axios.post('/oauth/v2/token', {
-                            'client_id': clientParam.id,
-                            'grant_type': 'refresh_token',
-                            'refresh_token': localStorage.getItem('refresh_token'),
-                            'client_secret': clientParam.secret,
-                        })
-                        .then((response)=>{
-                            let access_token = response.data.access_token
-                            localStorage.setItem('access_token', access_token)
-                            let refresh_token = response.data.refresh_token
-                            localStorage.setItem('refresh_token', refresh_token)
-                            this.submitUpload()
-                        })
-                        .catch((response)=>{
-                            if (response.status == 401) {
-                                
-                            }
-                        })
-                    }
+                    axios.post('/oauth/v2/token', {
+                        'client_id': clientParam.id,
+                        'grant_type': 'refresh_token',
+                        'refresh_token': localStorage.getItem('refresh_token'),
+                        'client_secret': clientParam.secret,
+                    })
+                    .then((response)=>{
+                        let access_token = response.data.access_token
+                        localStorage.setItem('access_token', access_token)
+                        let refresh_token = response.data.refresh_token
+                        localStorage.setItem('refresh_token', refresh_token)
+                        this.submitUpload()
+                    })
+                    .catch((response)=>{
+                        if (response.status == 401) {
+                            this.fullscreenLoading = false
+                            localStorage.removeItem('access_token')
+                            localStorage.removeItem('refresh_token')
+                            this.$store.dispatch('SET_AUTHORIZED', false)
+                            this.$router.push('Authorization')
+                        }
+                    })
                 })
             })
         },
         change(file){
             this.form.file = file
+        },
+        openFullScreen() {
+            const loading = this.$loading({
+                lock: true,
+                text: 'Loading',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
         }
     }
 }
