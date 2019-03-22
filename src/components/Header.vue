@@ -2,18 +2,21 @@
     <header>
         <logo/>
         <Nav/>
+        <adminpanel/>
     </header>
 </template>
 
 <script>
-import logo from '@/components/Logo';
-import Nav from '@/components/Nav';
+import logo from '@/components/Logo'
+import Nav from '@/components/Nav'
+import adminpanel from '@/components/AdminPanel'
 
 export default {
   name: 'Header',
   components: {
     logo,
-    Nav
+    Nav,
+    adminpanel
   }
 }
 </script>

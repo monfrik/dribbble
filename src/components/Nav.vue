@@ -10,26 +10,21 @@
 
 <script>
 export default {
-  name: 'Nav',
-  data(){
-      return {
-          pages: [
-              {  name: 'New', id: 0},
-              {  name: 'Popular', id: 1}
-          ]
-      }
-  },
-  methods: {
-      greet: function(name){
-          alert('Ты нажал на ' + name);
-      } 
-  }
+    name: 'Nav',
+    data(){
+        return {
+            pages: [
+                {  name: 'New', id: 0},
+                {  name: 'Popular', id: 1}
+            ]
+        }
+    }
 }
 </script>
 
 <style lang="sass" scoped>
     div
-        width: 80%
+        width: 70%
         border: 2px solid transparent
         border-bottom-color: #E4E7ED
         padding-left: 2%

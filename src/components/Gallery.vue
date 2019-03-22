@@ -10,7 +10,7 @@
             class="pagination"
             background
             layout="prev, pager, next"
-            :page-size="15"
+            :page-size="pageCount"
             :current-page.sync="currentPage"
             :total="totalItems"
             @current-change="changePage()"
@@ -30,7 +30,7 @@
 import axios from 'axios'
 import loading from '@/components/Loading'
 export default {
-    name: 'New',
+    name: 'Gallery',
     data(){
         return {
             images: [],
@@ -39,14 +39,20 @@ export default {
             outerVisible: false,
             currentImage: {},
             pageCount: 15,
-            currentPage : 1
+            currentPage : 1,
+        }
+    },
+    props: {
+        category: {
+            type: String,
+            default: 'news'
         }
     },
     components: {
         loading
     },
     mounted () {
-        axios.get('/api/photos?popular=true&page=1&limit=15')
+        axios.get(`/api/photos?${this.category}=true&page=1&limit=15`)
             .then(response => {
                 this.images = response.data.data
                 this.totalItems = response.data.totalItems
@@ -56,16 +62,24 @@ export default {
             })
     },
     methods: {
-            changePage: function(){
-                this.loadingImages = true
-                axios.get(`/api/photos?popular=true&page=${this.currentPage}&limit=15`)
-                .then(response => {
-                    this.images = response.data.data
-                })
-                .then(()=>{
-                    this.loadingImages = false
-                })
-            }
+        changePage: function(){
+            this.loadingImages = true
+            axios.get(`/api/photos?${this.category}=true&page=${this.currentPage}&limit=15`)
+            .then(response => {
+                if (!this.totalItems) {
+                    this.totalItems = response.data.totalItems
+                }
+                this.images = response.data.data
+            })
+            .then(()=>{
+                this.loadingImages = false
+            })
+        }
+    },
+    watch: {
+        category : function () {
+            this.totalItems = this.changePage()
+        }
     }
 }
 </script>
@@ -112,4 +126,6 @@ export default {
     .pagination
         margin: 36px auto 0 auto
         display: table
+    .el-pagination.is-background .el-pager li:not(.disabled).active
+        background-color: red
 </style>

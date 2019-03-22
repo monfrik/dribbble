@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Header from '@/components/Header';
+import Header from '@/components/Header'
 
 export default {
   name: 'app',
@@ -34,4 +34,6 @@ export default {
         position: relative
     .el-pagination.is-background .el-pager li:not(.disabled).active
         background-color: #ED5992
+    .el-pagination.is-background .el-pager li:hover:not(.active)
+        color: #ED5992
 </style>
