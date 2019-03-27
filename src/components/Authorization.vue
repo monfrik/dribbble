@@ -41,7 +41,7 @@ export default {
                         .then(()=>{
                             this.fullscreenLoading = false
                             this.$router.push('Admin')
-                            this.$message.success('Добро пожаловать,'+this.form.login+'!')
+                            this.$message.access('Добро пожаловать,'+this.form.login+'!')
                             this.fullscreenLoading = false
                         })
                         .catch(()=>{
