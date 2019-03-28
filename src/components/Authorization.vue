@@ -13,8 +13,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import clientParam from '@/utils/authConfig.js'
+import { error } from 'util';
 
 export default {
     name: 'authoriation',
@@ -40,7 +41,6 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (valid) {
                     this.fullscreenLoading = true
-                    console.log('1')
                     this.$store.dispatch('AUTHORIZATION', {
                         client_id: clientParam.id,
                         grant_type: 'password',
@@ -49,7 +49,6 @@ export default {
                         password: this.form.password
                     })
                     .then(response => {
-                        console.log('2')
                         this.$router.push('Admin')
 
                         this.$message.success('Welcome '+this.form.login+'!')
@@ -57,7 +56,6 @@ export default {
                         this.fullscreenLoading = false
                     })
                     .catch(() => {
-                        console.log('3')
                         this.$message.error('Incorrect login or password')
                         this.fullscreenLoading = false
                     })
