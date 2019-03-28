@@ -47,10 +47,10 @@ export default {
             },
             rules: {
                 name: [
-                     { required: true, message: 'Пожалуйста, введите название', trigger: 'blur' }
+                     { required: true, message: 'Enter name image', trigger: 'blur' }
                 ],
                 desc: [
-                     { required: true, message: 'Пожалуйста, введите описание', trigger: 'blur' }
+                     { required: true, message: 'Enter description', trigger: 'blur' }
                 ],
             },
             fullscreenLoading: false
@@ -70,14 +70,16 @@ export default {
                 if (!this.form.file.raw){
                     this.$notify.error({
                         title: 'Error',
-                        message: 'Загрузите файл'
-                    });
+                        message: 'File not loaded'
+                    })
+                    return false
                 }
                 if (!this.form.new && !this.form.popular){
                     this.$notify.error({
                         title: 'Error',
-                        message: 'Введите категорию'
-                    });
+                        message: 'Category not entered'
+                    })
+                    return false
                 }
                 if (valid && (this.form.new || this.form.popular) && this.form.file.raw) {
                     this.fullscreenLoading = true
@@ -104,31 +106,17 @@ export default {
             this.form.file = file
         },
         sendFile(){
-            let formData = new FormData();
-            formData.append('file', this.form.file.raw)
-            axios.post('/api/media_objects', formData, {
-                'headers': {
-                    'Authorization': 'Bearer '+this.$store.getters.ACCESS_TOKEN
-                }
+            this.$store.dispatch('SEND_FILE', {
+                file: this.form.file.raw, 
+                name: this.form.name, 
+                desc: this.form.desc, 
+                newBool: this.form.new, 
+                popular: this.form.popular
             })
-            .then(response => {
-                const id = response.data.id
-                axios.post('/api/photos', {
-                    "name": this.form.name,
-                    "description": this.form.desc,
-                    "new": this.form.new,
-                    "popular": this.form.popular,
-                    "image": `/api/media_objects/${id}`
-                }, {
-                    'headers': {
-                        'Authorization': 'Bearer '+this.$store.getters.ACCESS_TOKEN
-                    }
-                })
-                .then(() => {
-                    this.fullscreenLoading = false
-                    this.$message.success('Изображение успешно добавлено!')
-                    this.clearForm()
-                })
+            .then(() => {
+                this.fullscreenLoading = false
+                this.$message.success('image successfully added!')
+                this.clearForm()
             })
         },
         openFullScreen() {
@@ -137,7 +125,7 @@ export default {
                 text: 'Loading',
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
-            });
+            })
         },
         clearForm(){
             this.form.type = []

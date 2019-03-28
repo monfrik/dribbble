@@ -1,10 +1,10 @@
 <template>
     <div>
         <div v-if="authorizedBool" class="admin">
-            <router-link v-if="authorizedBool" to="Admin">Добавить фото</router-link>
-            <a @click="signOut()">Выйти</a>
+            <router-link v-if="authorizedBool" to="Admin">Add image</router-link>
+            <a @click="signOut()">Log out</a>
         </div>
-        <router-link v-else to="Authorization">Авторизация</router-link>
+        <router-link v-else to="Authorization">Authorization</router-link>
     </div>
 </template>
 
@@ -37,7 +37,12 @@ export default {
 <style lang="sass" scoped>
     .admin
         display: flex
-        flex-direction: column
-    a
-        cursor: pointer
+        a
+            cursor: pointer
+            white-space: nowrap
+            color: #8C8C8C
+            &:hover
+                color: #ED5992
+            &:nth-child(2)
+                margin-left: 10%
 </style>

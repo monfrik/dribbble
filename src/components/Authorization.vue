@@ -26,10 +26,10 @@ export default {
             },
             rules: {
                 login: [
-                     { required: true, message: 'Пожалуйста введите логин', trigger: 'blur' }
+                     { required: true, message: 'Enter login', trigger: 'blur' }
                 ],
                 password: [
-                     { required: true, message: 'Пожалуйста введите пароль', trigger: 'blur' }
+                     { required: true, message: 'Enter password', trigger: 'blur' }
                 ],
             },
             fullscreenLoading: false
@@ -40,37 +40,26 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (valid) {
                     this.fullscreenLoading = true
-                    axios.get(`/oauth/v2/token`, {
-                        params: {
-                            client_id: clientParam.id,
-                            grant_type: 'password',
-                            client_secret: clientParam.secret,
-                            username: this.form.login,
-                            password: this.form.password
-                        }
+                    this.$store.dispatch('AUTHORIZATION', {
+                        client_id: clientParam.id,
+                        grant_type: 'password',
+                        client_secret: clientParam.secret,
+                        username: this.form.login,
+                        password: this.form.password
                     })
                     .then(response => {
-                        let access_token = response.data.access_token
-                        let refresh_token = response.data.refresh_token
-                        localStorage.setItem('access_token', access_token)
-                        localStorage.setItem('refresh_token', refresh_token)
-
-                        this.$store.dispatch('CHANGE_AUTHORIZED', true)
-                        this.$store.dispatch('CHANGE_ACCESS_TOKEN', access_token)
-                        this.$store.dispatch('CHANGE_REFRESH_TOKEN', refresh_token)
-
                         this.$router.push('Admin')
 
-                        this.$message.success('Добро пожаловать, '+this.form.login+'!')
+                        this.$message.success('Welcome '+this.form.login+'!')
 
                         this.fullscreenLoading = false
                     })
                     .catch(() => {
-                        this.$message.error('Не правильный логин или пароль')
+                        this.$message.error('Incorrect login or password')
                         this.fullscreenLoading = false
                     })
                 }
-            });
+            })
         },
         openFullScreen() {
             const loading = this.$loading({
@@ -78,7 +67,7 @@ export default {
                 text: 'Loading',
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
-            });
+            })
         }
     }
 }

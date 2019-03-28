@@ -57,12 +57,14 @@ export default {
     methods: {
         changePage(){
             this.loadingImages = true
-            axios.get(`/api/photos?${this.category}=true&page=${this.currentPage}&limit=15`)
-            .then(response => {
-                if (!this.totalItems) {
-                    this.totalItems = response.data.totalItems
-                }
-                this.images = response.data.data
+            this.$store.dispatch('GET_PHOTOS', {
+                category: this.category,
+                currentPage: this.currentPage,
+                limit: 15
+            })
+            .then((respone) => {
+                this.totalItems = respone.totalItems
+                this.images = respone.images
             })
             .then(()=>{
                 this.loadingImages = false
@@ -105,9 +107,10 @@ export default {
         border-radius: 4px
         img
             display: block
-            width: 98%
+            max-width: 98%
             margin: auto
             height: auto
+            max-height: 50vh
         h2
             color: #2F1767
             font-size: 18px
@@ -117,6 +120,7 @@ export default {
             color: #606266
             font-size: 14px
             margin-top: 20px
+            overflow-wrap: break-word
     .pagination
         margin: 36px auto 0 auto
         display: table

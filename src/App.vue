@@ -49,4 +49,9 @@ export default {
         background-color: #ED5992
     .el-pagination.is-background .el-pager li:hover:not(.active)
         color: #ED5992
+    .el-dialog__wrapper
+        max-height: 100vh
+        .el-dialog
+            margin-top: 2vh
+            max-height: 75vh
 </style>

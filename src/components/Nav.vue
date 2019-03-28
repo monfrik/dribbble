@@ -2,7 +2,7 @@
     <div>
         <ul>
             <li v-for="item in pages" :key="item.id">
-                <router-link :to="{path: item.name}" active-class="active">{{ item.name }}</router-link>
+                <router-link :to="{path: item.name}" v-bind:class="{ active: activePage==item.name }" @click.native="changeActivePage(item.name)">{{ item.name }}</router-link>
             </li>
         </ul>
     </div>
@@ -16,7 +16,13 @@ export default {
             pages: [
                 {  name: 'New', id: 0},
                 {  name: 'Popular', id: 1}
-            ]
+            ],
+            activePage: 'New'
+        }
+    },
+    methods: {
+        changeActivePage(name){
+            this.activePage = name
         }
     }
 }
@@ -34,9 +40,11 @@ export default {
                 margin-left: 50px
             a
                 color: #8C8C8C
+                position: relative
+                &:hover
+                    color: #ED5992
                 &.active
                     color: #ED5992
-                    position: relative
                     &::before
                         content: ''
                         position: absolute
@@ -45,5 +53,5 @@ export default {
                         left: -30%
                         height: 2.5px
                         background-color: #ED5992
-                        bottom: -13px
+                        bottom: -65%
 </style>

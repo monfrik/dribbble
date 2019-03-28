@@ -24,6 +24,8 @@ export default {
 <style lang="sass" scoped>
     header
         padding: 30px 24px 0px 24px
+        margin: auto
         display: flex
+        max-width: 90vw
         justify-content: space-between
 </style>
