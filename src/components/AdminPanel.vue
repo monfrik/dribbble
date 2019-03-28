@@ -27,10 +27,7 @@ export default {
     methods: {
         signOut(){
             this.authorizedBool = false
-            localStorage.removeItem('access_token')
-            localStorage.removeItem('refresh_token')
-            this.$store.dispatch('CHANGE_ACCESS_TOKEN', '')
-            this.$store.dispatch('CHANGE_REFRESH_TOKEN', '')
+            this.$store.dispatch('SIGNOUT')
             this.$router.push('Authorization')
         }
     }

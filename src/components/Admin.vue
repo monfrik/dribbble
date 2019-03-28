@@ -81,15 +81,22 @@ export default {
                 }
                 if (valid && (this.form.new || this.form.popular) && this.form.file.raw) {
                     this.fullscreenLoading = true
-                    if (this.$store.dispatch('CHECK_ACCESS_TOKEN')){
-                        this.sendFile()
-                    } else {
-                        if (this.$store.dispatch('UPDATE_ACCESS_TOKEN')){
-                            this.sendFile()
+                    this.$store.dispatch('CHECK_ACCESS_TOKEN')
+                    .then(response => {
+                        if (!response) {
+                            this.$store.dispatch('UPDATE_ACCESS_TOKEN')
+                            .then(response => {
+                                if (!response) {
+                                    this.$store.dispatch('SIGNOUT')
+                                    this.$router.push('Authorization')
+                                } else {
+                                    this.sendFile()
+                                }
+                            })
                         } else {
-                            console.log(this)
+                            this.sendFile()
                         }
-                    }
+                    })
                 }
             })
         },
@@ -101,7 +108,7 @@ export default {
             formData.append('file', this.form.file.raw)
             axios.post('/api/media_objects', formData, {
                 'headers': {
-                    'Authorization': 'Bearer '+this.$store.getters.ACCESSTOKEN
+                    'Authorization': 'Bearer '+this.$store.getters.ACCESS_TOKEN
                 }
             })
             .then(response => {
@@ -114,7 +121,7 @@ export default {
                     "image": `/api/media_objects/${id}`
                 }, {
                     'headers': {
-                        'Authorization': 'Bearer '+this.$store.getters.ACCESSTOKEN
+                        'Authorization': 'Bearer '+this.$store.getters.ACCESS_TOKEN
                     }
                 })
                 .then(() => {

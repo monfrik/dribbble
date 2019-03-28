@@ -15,10 +15,10 @@ export let store = new Vuex.Store({
         AUTHORIZED: state => {
             return state.authorized
         },
-        ACCESSTOKEN: state => {
+        ACCESS_TOKEN: state => {
             return state.accessToken
         },
-        REFRESHTOKEN: state => {
+        REFRESH_TOKEN: state => {
             return state.refreshToken
         }
     },
@@ -66,22 +66,24 @@ export let store = new Vuex.Store({
             context.commit('SET_REFRESH_TOKEN', data)
         },
         CHECK_ACCESS_TOKEN: (context) => {
-            axios.get('/api/users/current', {
+            return axios.get('/api/users/current', {
                 'headers': {
-                    'Authorization': 'Bearer '+context.getters.accessToken
+                    'Authorization': 'Bearer '+context.getters.ACCESS_TOKEN
                 }
             })
             .then(()=>{
+                context.commit('SET_AUTHORIZED', true)
                 return true
             })
             .catch(response=>{
                 if (response.response.status == 401) {
+                    context.commit('SET_AUTHORIZED', false)
                     return false
                 }
             })
         },
         UPDATE_ACCESS_TOKEN: (context) => {
-            axios.post('/oauth/v2/token', {
+            return axios.post('/oauth/v2/token', {
                 'client_id': clientParam.id,
                 'grant_type': 'refresh_token',
                 'refresh_token': context.getters.REFRESH_TOKEN,
@@ -92,16 +94,22 @@ export let store = new Vuex.Store({
                 let refresh_token = response.data.refresh_token
                 localStorage.setItem('access_token', access_token)
                 localStorage.setItem('refresh_token', refresh_token)
-                context.commit('CHANGE_ACCESS_TOKEN', access_token)
-                context.commit('CHANGE_REFRESH_TOKEN', refresh_token)
+                context.commit('SET_ACCESS_TOKEN', access_token)
+                context.commit('SET_REFRESH_TOKEN', refresh_token)
                 context.commit('SET_AUTHORIZED', true)
                 return true
             })
-            .catch(response=>{
-                if (response.response.status == 401) {
-                    return false
-                }
+            .catch(()=>{
+                return false
             })
+        },
+        SIGNOUT: (context) => {
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            context.commit('SET_AUTHORIZED', false)
+            context.commit('SET_ACCESS_TOKEN', '')
+            context.commit('SET_REFRESH_TOKEN', '')
         }
     },
 });

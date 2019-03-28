@@ -57,7 +57,6 @@ export default {
     methods: {
         changePage(){
             this.loadingImages = true
-            this.currentPage = 1
             axios.get(`/api/photos?${this.category}=true&page=${this.currentPage}&limit=15`)
             .then(response => {
                 if (!this.totalItems) {
@@ -72,7 +71,8 @@ export default {
     },
     watch: {
         category : function () {
-           this.changePage()
+            this.currentPage = 1
+            this.changePage()
         }
     }
 }

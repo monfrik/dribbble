@@ -14,18 +14,17 @@ export default {
         Header
     },
     async mounted(){
-        let res = await this.$store.dispatch('CHECK_ACCESS_TOKEN')
-        console.log(res)
-        console.log(this.$store.getters.AUTHORIZED)
-        // .then((response)=>{
-        //     console.log(response)
-        // })
-        // if (!this.$store.dispatch('CHECK_ACCESS_TOKEN')){
-        //     console.log('2')
-        //     if(!this.$store.dispatch('UPDATE_ACCESS_TOKEN')){
-        //         console.log('3')
-        //     }
-        // }
+        this.$store.dispatch('CHECK_ACCESS_TOKEN')
+        .then(response => {
+            if (!response) {
+                this.$store.dispatch('UPDATE_ACCESS_TOKEN')
+                .then(response => {
+                    if (!response) {
+                        this.$store.dispatch('SIGNOUT')
+                    }
+                })
+            }
+        })
     }
 }
 </script>
