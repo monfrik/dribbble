@@ -1,7 +1,7 @@
 <template>
     <div v-loading.fullscreen.lock="fullscreenLoading">
-        <el-form ref="form">
-             <el-form-item label="Name photo">
+        <el-form ref="form" :rules="rules" :model="form">
+             <el-form-item prop="name" label="Name photo">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="Description photo" prop="desc">
@@ -24,7 +24,7 @@
                 <el-button slot="trigger" size="small" type="primary" v-model="form.file">select file</el-button>
                 <div class="el-upload__tip" slot="tip">jpg/png files with a size less than 500kb</div>
             </el-upload>
-            <el-button type="primary" @click="submitUpload">upload</el-button>
+            <el-button type="primary" @click="submitUpload()">upload</el-button>
         </el-form>
     </div>
 </template>
@@ -39,95 +39,90 @@ export default {
         return {
             form: {
                 type: [],
+                popular: false,
+                new: false,
                 name: '',
                 desc: '',
                 file: {}
+            },
+            rules: {
+                name: [
+                     { required: true, message: 'Пожалуйста, введите название', trigger: 'blur' }
+                ],
+                desc: [
+                     { required: true, message: 'Пожалуйста, введите описание', trigger: 'blur' }
+                ],
             },
             fullscreenLoading: false
         }
     },
     methods: {
         submitUpload() {
-            this.fullscreenLoading = true
-            let newBool = (this.form.type[0] == 'New') ? true : (this.form.type[1] == 'New') ? true : false
-            let popularBool = (this.form.type[0] == 'Popular') ? true : (this.form.type[1] == 'Popular') ? true : false
+            this.$refs.form.validate((valid) => {
+                this.form.type.forEach( element => {
+                    if (element == 'Popular') {
+                        this.form.popular = true
+                    }
+                    if (element == 'New') {
+                        this.form.new = true
+                    }
+                })
+                if (!this.form.file.raw){
+                    this.$notify.error({
+                        title: 'Error',
+                        message: 'Загрузите файл'
+                    });
+                }
+                if (!this.form.new && !this.form.popular){
+                    this.$notify.error({
+                        title: 'Error',
+                        message: 'Введите категорию'
+                    });
+                }
+                if (valid && (this.form.new || this.form.popular) && this.form.file.raw) {
+                    this.fullscreenLoading = true
+                    if (this.$store.dispatch('CHECK_ACCESS_TOKEN')){
+                        this.sendFile()
+                    } else {
+                        if (this.$store.dispatch('UPDATE_ACCESS_TOKEN')){
+                            this.sendFile()
+                        } else {
+                            console.log(this)
+                        }
+                    }
+                }
+            })
+        },
+        change(file){
+            this.form.file = file
+        },
+        sendFile(){
             let formData = new FormData();
             formData.append('file', this.form.file.raw)
             axios.post('/api/media_objects', formData, {
                 'headers': {
-                    'Authorization': 'Bearer '+localStorage.getItem('access_token')
+                    'Authorization': 'Bearer '+this.$store.getters.ACCESSTOKEN
                 }
-            })
-            .catch((response)=>{
-                axios.post('/oauth/v2/token', {
-                    'client_id': clientParam.id,
-                    'grant_type': 'refresh_token',
-                    'refresh_token': localStorage.getItem('refresh_token'),
-                    'client_secret': clientParam.secret,
-                })
-                .then((response)=>{
-                    let access_token = response.data.access_token
-                    localStorage.setItem('access_token', access_token)
-                    let refresh_token = response.data.refresh_token
-                    localStorage.setItem('refresh_token', refresh_token)
-                    this.submitUpload()
-                })
-                .catch((response)=>{
-                    this.fullscreenLoading = false
-                    localStorage.removeItem('access_token')
-                    localStorage.removeItem('refresh_token')
-                    this.$store.dispatch('SET_AUTHORIZED', false)
-                    this.$router.push('Authorization')
-                })
             })
             .then(response => {
                 const id = response.data.id
                 axios.post('/api/photos', {
                     "name": this.form.name,
                     "description": this.form.desc,
-                    "new": newBool,
-                    "popular": popularBool,
+                    "new": this.form.new,
+                    "popular": this.form.popular,
                     "image": `/api/media_objects/${id}`
                 }, {
                     'headers': {
-                        'Authorization': 'Bearer '+localStorage.getItem('access_token')
+                        'Authorization': 'Bearer '+this.$store.getters.ACCESSTOKEN
                     }
                 })
-                .then(()=>{
+                .then(() => {
                     this.fullscreenLoading = false
-                    this.$message({
-                        message: 'Photo resource created',
-                        type: 'success'
-                    });
-                })
-                .catch((response)=>{
-                    axios.post('/oauth/v2/token', {
-                        'client_id': clientParam.id,
-                        'grant_type': 'refresh_token',
-                        'refresh_token': localStorage.getItem('refresh_token'),
-                        'client_secret': clientParam.secret,
-                    })
-                    .then((response)=>{
-                        let access_token = response.data.access_token
-                        localStorage.setItem('access_token', access_token)
-                        let refresh_token = response.data.refresh_token
-                        localStorage.setItem('refresh_token', refresh_token)
-                        this.submitUpload()
-                    })
-                    .catch((response)=>{
-                        if (response.status == 401) {
-                            this.fullscreenLoading = false
-                            localStorage.removeItem('access_token')
-                            localStorage.removeItem('refresh_token')
-                            this.$store.dispatch('SET_AUTHORIZED', false)
-                            this.$router.push('Authorization')
-                        }
-                    })
+                    this.$message.success('Изображение успешно добавлено!')
+                    this.clearForm()
                 })
             })
-        },
-        change(file){
-            this.form.file = file
         },
         openFullScreen() {
             const loading = this.$loading({
@@ -136,6 +131,15 @@ export default {
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
+        },
+        clearForm(){
+            this.form.type = []
+            this.form.name = ''
+            this.form.desc = ''
+            this.form.new = false
+            this.form.popular = false
+            this.form.file = {}
+            this.$refs.upload.clearFiles()
         }
     }
 }

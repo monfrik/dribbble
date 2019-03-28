@@ -24,7 +24,7 @@ export default {
 
 <style lang="sass" scoped>
     div
-        width: 70%
+        width: 65%
         border: 2px solid transparent
         border-bottom-color: #E4E7ED
         padding-left: 2%

@@ -9,10 +9,24 @@
 import Header from '@/components/Header'
 
 export default {
-  name: 'app',
-  components: {
-    Header
-  }
+    name: 'app',
+    components: {
+        Header
+    },
+    async mounted(){
+        let res = await this.$store.dispatch('CHECK_ACCESS_TOKEN')
+        console.log(res)
+        console.log(this.$store.getters.AUTHORIZED)
+        // .then((response)=>{
+        //     console.log(response)
+        // })
+        // if (!this.$store.dispatch('CHECK_ACCESS_TOKEN')){
+        //     console.log('2')
+        //     if(!this.$store.dispatch('UPDATE_ACCESS_TOKEN')){
+        //         console.log('3')
+        //     }
+        // }
+    }
 }
 </script>
 

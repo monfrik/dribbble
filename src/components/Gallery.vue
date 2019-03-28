@@ -52,18 +52,12 @@ export default {
         loading
     },
     mounted () {
-        axios.get(`/api/photos?${this.category}=true&page=1&limit=15`)
-            .then(response => {
-                this.images = response.data.data
-                this.totalItems = response.data.totalItems
-            })
-            .then(()=>{
-                this.loadingImages = false
-            })
+        this.changePage()
     },
     methods: {
-        changePage: function(){
+        changePage(){
             this.loadingImages = true
+            this.currentPage = 1
             axios.get(`/api/photos?${this.category}=true&page=${this.currentPage}&limit=15`)
             .then(response => {
                 if (!this.totalItems) {
@@ -78,7 +72,7 @@ export default {
     },
     watch: {
         category : function () {
-            this.totalItems = this.changePage()
+           this.changePage()
         }
     }
 }
