@@ -62,8 +62,7 @@ export let store = new Vuex.Store({
             })
             .then(response=>{
                 if (!response) {
-                    context.commit('SET_AUTHORIZED', false)
-                    return false
+                    context.dispatch('UPDATE_ACCESS_TOKEN')
                 }
                 context.commit('SET_AUTHORIZED', true)
                 return true
@@ -82,6 +81,7 @@ export let store = new Vuex.Store({
             })
             .then((response)=>{
                 if (!response) {
+                    context.dispatch('SIGNOUT')
                     return false
                 }
                 let access_token = response.data.access_token

@@ -5,25 +5,37 @@
   "scripts": {
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build --open",
+    "test": "jest",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vue/babel-helper-vue-jsx-merge-props": "^1.0.0-beta.3",
     "axios": "^0.18.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
     "element-ui": "^2.6.1",
     "vue": "^2.6.6",
     "vuex": "^3.1.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.4.2",
+    "@vue/babel-plugin-transform-vue-jsx": "^1.0.0-beta.3",
     "@vue/cli-plugin-babel": "^3.5.0",
     "@vue/cli-plugin-eslint": "^3.5.0",
     "@vue/cli-service": "^3.5.0",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-plugin-transform-vue-jsx": "^4.0.1",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
+    "jest": "^24.5.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
+    "vue-jest": "^2.5.0",
     "vue-router": "^3.0.2",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "vue-test-utils": "^1.0.0-beta.11"
   },
   "eslintConfig": {
     "root": true,
@@ -48,5 +60,26 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^test/(.*)$": "<rootDir>/test/$1"
+    }
+  },
+  "snapshotSerializers": [
+    "<rootDir>/node_modules/jest-serializer-vue"
+  ],
+  "setupFiles": [
+    "<rootDir>/test/jest-setup.js"
   ]
 }

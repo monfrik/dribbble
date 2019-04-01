@@ -15,16 +15,6 @@ export default {
     },
     async mounted(){
         this.$store.dispatch('CHECK_ACCESS_TOKEN')
-        .then(response => {
-            if (!response) {
-                this.$store.dispatch('UPDATE_ACCESS_TOKEN')
-                .then(response => {
-                    if (!response) {
-                        this.$store.dispatch('SIGNOUT')
-                    }
-                })
-            }
-        })
     }
 }
 </script>

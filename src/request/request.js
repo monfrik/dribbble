@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {store} from '../store/index.js'
 
+let lastRequest = {}
 const service = axios.create({
   baseURL: process.env.BASE_API
 })
@@ -37,7 +38,7 @@ service.interceptors.response.use(
     return response
   },
   async error => {
-    if (error.response && error.response.status === 401 || error.response.status === 403 ) {
+    if (error.response && error.response.status === 401 || error.response.status === 403 || error.response.status === 400) {
       return false
     }
   }

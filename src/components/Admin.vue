@@ -84,21 +84,6 @@ export default {
                 if (valid && (this.form.new || this.form.popular) && this.form.file.raw) {
                     this.fullscreenLoading = true
                     this.$store.dispatch('CHECK_ACCESS_TOKEN')
-                    .then(response => {
-                        if (!response) {
-                            this.$store.dispatch('UPDATE_ACCESS_TOKEN')
-                            .then(response => {
-                                if (!response) {
-                                    this.$store.dispatch('SIGNOUT')
-                                    this.$router.push('Authorization')
-                                } else {
-                                    this.sendFile()
-                                }
-                            })
-                        } else {
-                            this.sendFile()
-                        }
-                    })
                 }
             })
         },

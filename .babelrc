@@ -1,0 +1,16 @@
+{
+    "plugins": ["transform-vue-jsx"],
+    "env": {
+      "test": {
+        "presets": [["env", { "targets": { "node": "current" } }]]
+      }
+    },
+    "presets": [
+      ["@babel/env", {
+        "targets": {
+          "esmodules": true
+        }
+      }]
+    ],
+    "plugins": ["transform-vue-jsx", "transform-runtime"]
+  }
