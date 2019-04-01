@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 import request from '@/request/request.js'
 import clientParam from '@/utils/authConfig.js'
 

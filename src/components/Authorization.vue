@@ -15,7 +15,7 @@
 <script>
 // import axios from 'axios'
 import clientParam from '@/utils/authConfig.js'
-import { error } from 'util';
+import { error } from 'util'
 
 export default {
     name: 'authoriation',

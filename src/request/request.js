@@ -1,8 +1,6 @@
 import axios from 'axios'
 import {store} from '../store/index.js'
 
-let requestQueue = []
-let lastRequest = {}
 const service = axios.create({
   baseURL: process.env.BASE_API
 })
